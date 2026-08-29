@@ -8,11 +8,8 @@ Window {
     title: "TVShell"
     color: Theme.bgDark
     flags: Qt.FramelessWindowHint | Qt.Window
-
-    // Fullscreen behavior for TV Shell
     visibility: Window.FullScreen
 
-    // Calculate scale factor relative to 4K (3840x2160)
     onWidthChanged: updateScale()
     onHeightChanged: updateScale()
     Component.onCompleted: updateScale()
@@ -23,101 +20,187 @@ Window {
         Theme.scaleFactor = Math.min(scaleW, scaleH) > 0 ? Math.min(scaleW, scaleH) : 1.0
     }
 
-    // Signal handlers connected from C++ RemoteKeyFilter
+    // Connect C++ RemoteKeyFilter events
     function handleBack() {
-        statusText.text = "EVENT: BACK / ESCAPE TRIGGERED"
+        FocusManager.backRequested()
+    }
+    function handleMenu() {
+        FocusManager.menuRequested()
     }
 
-    function handleMenu() {
-        statusText.text = "EVENT: MENU (M) TRIGGERED"
+    Connections {
+        target: FocusManager
+        function onItemActivated(zone, index) {
+            eventFeedback.text = "ACTIVATE -> " + FocusManager.zoneName(zone) + " [ITEM " + index + "]"
+        }
+        function onBackRequested() {
+            eventFeedback.text = "EVENT -> BACK TRIGGERED (ESC / BACK)"
+        }
+        function onMenuRequested() {
+            eventFeedback.text = "EVENT -> MENU TRIGGERED (M / MENU)"
+        }
     }
 
     Item {
-        id: rootContainer
+        id: shellContainer
         anchors.fill: parent
-        focus: true
+        anchors.margins: Theme.px(60)
 
-        // Header Section
+        // ==========================================
+        // ZONE 3: TOP WINDOW & SYSTEM CONTROLS
+        // ==========================================
         Item {
-            id: headerArea
+            id: zone3Container
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
-            height: Theme.px(200)
+            height: Theme.px(100)
 
             Row {
                 anchors.left: parent.left
-                anchors.leftMargin: Theme.px(100)
                 anchors.verticalCenter: parent.verticalCenter
-                spacing: Theme.px(30)
+                spacing: Theme.px(20)
 
                 Text {
-                    text: "TV SHELL // BASE ARCHITECTURE"
-                    color: Theme.textPrimary
-                    font.pixelSize: Theme.px(44)
+                    text: "TV SHELL // FOCUS ENGINE"
+                    color: Theme.textAccent
+                    font.pixelSize: Theme.px(32)
                     font.bold: true
                 }
+            }
 
-                Rectangle {
-                    width: Theme.px(3)
-                    height: Theme.px(40)
-                    color: Theme.textSecondary
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-
-                Text {
-                    id: statusText
-                    text: "READY (USE D-PAD / ARROWS)"
-                    color: Theme.textAccent
-                    font.pixelSize: Theme.px(26)
-                    anchors.verticalCenter: parent.verticalCenter
-                }
+            ZoneFocusScope {
+                id: zone3
+                zoneId: FocusManager.Zone.TopControls
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                width: Theme.px(600)
+                height: Theme.px(70)
+                isHorizontal: true
+                itemSpacing: Theme.px(16)
+                model: ["INPUT", "NETWORK", "POWER"]
             }
         }
 
-        // Horizontal Focus Rail
-        Row {
-            id: contentRail
-            anchors.centerIn: parent
-            spacing: Theme.px(50)
-
-            ShellFocusScope {
-                id: card1
-                labelText: "SHELF ITEM 1"
-                focus: true
-                KeyNavigation.right: card2
-                onActivated: statusText.text = "ACTIVATED: SHELF ITEM 1"
-            }
-
-            ShellFocusScope {
-                id: card2
-                labelText: "SHELF ITEM 2"
-                KeyNavigation.left: card1
-                KeyNavigation.right: card3
-                onActivated: statusText.text = "ACTIVATED: SHELF ITEM 2"
-            }
-
-            ShellFocusScope {
-                id: card3
-                labelText: "SHELF ITEM 3"
-                KeyNavigation.left: card2
-                onActivated: statusText.text = "ACTIVATED: SHELF ITEM 3"
-            }
-        }
-
-        // 10-foot UX Safe Zone Overlay Guide (Bottom HUD)
+        // ==========================================
+        // ZONE 1: ROTARY APPLICATION MENU (LEFT RAIL)
+        // ==========================================
         Item {
+            id: zone1Container
+            anchors.top: zone3Container.bottom
+            anchors.bottom: zone4Container.top
+            anchors.left: parent.left
+            anchors.topMargin: Theme.px(30)
+            anchors.bottomMargin: Theme.px(30)
+            width: Theme.px(500)
+
+            Text {
+                id: zone1Header
+                text: "ZONE 1: ROTARY MENU"
+                color: Theme.textSecondary
+                font.pixelSize: Theme.px(20)
+                font.bold: true
+            }
+
+            ZoneFocusScope {
+                id: zone1
+                zoneId: FocusManager.Zone.RotaryMenu
+                anchors.top: zone1Header.bottom
+                anchors.topMargin: Theme.px(16)
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                isHorizontal: false
+                itemSpacing: Theme.px(16)
+                model: ["HOME / LAUNCHER", "MEDIA LIBRARY", "ARCADE EMULATOR", "SETTINGS"]
+            }
+        }
+
+        // ==========================================
+        // ZONE 2: MAIN APPLICATION LIST (CENTER RAIL)
+        // ==========================================
+        Item {
+            id: zone2Container
+            anchors.top: zone3Container.bottom
+            anchors.bottom: zone4Container.top
+            anchors.left: zone1Container.right
+            anchors.right: parent.right
+            anchors.topMargin: Theme.px(30)
+            anchors.bottomMargin: Theme.px(30)
+            anchors.leftMargin: Theme.px(40)
+
+            Text {
+                id: zone2Header
+                text: "ZONE 2: MAIN APP LIST"
+                color: Theme.textSecondary
+                font.pixelSize: Theme.px(20)
+                font.bold: true
+            }
+
+            ZoneFocusScope {
+                id: zone2
+                zoneId: FocusManager.Zone.MainAppList
+                anchors.top: zone2Header.bottom
+                anchors.topMargin: Theme.px(16)
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                isHorizontal: false
+                itemSpacing: Theme.px(16)
+                model: [
+                    "01. CYBERSTREAM VIDEO PLAYER",
+                    "02. RETRO ARCH CONSOLE",
+                    "03. SYSTEM MONITOR & HARDWARE STATS",
+                    "04. WAYLAND DESKTOP KIOSK SUB-SURFACE",
+                    "05. AUDIO MATRIX / SOUND SETTINGS"
+                ]
+            }
+        }
+
+        // ==========================================
+        // ZONE 4: BOTTOM NAVIGATION / HELP BAR
+        // ==========================================
+        Item {
+            id: zone4Container
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
             height: Theme.px(120)
 
-            Text {
-                anchors.centerIn: parent
-                text: "NAVIGATE: [LEFT/RIGHT]   |   SELECT: [ENTER]   |   MENU: [M]   |   BACK: [ESC]"
-                color: Theme.textSecondary
-                font.pixelSize: Theme.px(22)
-                font.letterSpacing: 1.5
+            Rectangle {
+                anchors.fill: parent
+                color: Theme.surfaceBase
+                radius: Theme.px(8)
+                border.color: Theme.borderBase
+                border.width: Theme.px(1)
+
+                Row {
+                    anchors.left: parent.left
+                    anchors.leftMargin: Theme.px(30)
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: Theme.px(20)
+
+                    Text {
+                        id: eventFeedback
+                        text: "STATUS: READY"
+                        color: Theme.textAccent
+                        font.pixelSize: Theme.px(24)
+                        font.bold: true
+                    }
+                }
+
+                ZoneFocusScope {
+                    id: zone4
+                    zoneId: FocusManager.Zone.BottomBar
+                    anchors.right: parent.right
+                    anchors.rightMargin: Theme.px(20)
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: Theme.px(540)
+                    height: Theme.px(60)
+                    isHorizontal: true
+                    itemSpacing: Theme.px(16)
+                    model: ["GUIDE", "SEARCH", "INFO"]
+                }
             }
         }
     }

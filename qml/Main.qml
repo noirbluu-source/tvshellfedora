@@ -3,93 +3,121 @@ import QtQuick.Window
 import TVShell
 
 Window {
-    id: rootWindow
-    width: 3840
-    height: 2160
+    id: mainWindow
     visible: true
-    title: "Y2K Shell"
-    color: StyleTokens.bgConcrete
+    title: "TVShell"
+    color: Theme.bgDark
+    flags: Qt.FramelessWindowHint | Qt.Window
 
-    function handleGlobalBack() {
-        console.log("Global Back received");
+    // Fullscreen behavior for TV Shell
+    visibility: Window.FullScreen
+
+    // Calculate scale factor relative to 4K (3840x2160)
+    onWidthChanged: updateScale()
+    onHeightChanged: updateScale()
+    Component.onCompleted: updateScale()
+
+    function updateScale() {
+        var scaleW = width / Theme.baseWidth
+        var scaleH = height / Theme.baseHeight
+        Theme.scaleFactor = Math.min(scaleW, scaleH) > 0 ? Math.min(scaleW, scaleH) : 1.0
     }
 
-    function handleGlobalMenu() {
-        console.log("Global Menu overlay triggered");
+    // Signal handlers connected from C++ RemoteKeyFilter
+    function handleBack() {
+        statusText.text = "EVENT: BACK / ESCAPE TRIGGERED"
     }
 
-    // Industrial Header
+    function handleMenu() {
+        statusText.text = "EVENT: MENU (M) TRIGGERED"
+    }
+
     Item {
-        id: header
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        height: 180
+        id: rootContainer
+        anchors.fill: parent
+        focus: true
 
-        Row {
+        // Header Section
+        Item {
+            id: headerArea
+            anchors.top: parent.top
             anchors.left: parent.left
-            anchors.leftMargin: 80
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: 24
+            anchors.right: parent.right
+            height: Theme.px(200)
 
-            Text {
-                text: "SYSTEM // TV-OS"
-                color: StyleTokens.neonAqua
-                font.pixelSize: StyleTokens.fontTitle
-                font.bold: true
-            }
-
-            Rectangle {
-                width: 4
-                height: 40
-                color: StyleTokens.chromeHighlight
+            Row {
+                anchors.left: parent.left
+                anchors.leftMargin: Theme.px(100)
                 anchors.verticalCenter: parent.verticalCenter
-            }
+                spacing: Theme.px(30)
 
-            Text {
-                text: "4K 60HZ DRIVER READY"
-                color: StyleTokens.textSecondary
-                font.pixelSize: StyleTokens.fontCaption
-                anchors.verticalCenter: parent.verticalCenter
-            }
-        }
-    }
-
-    // Primary 10-foot Horizontal App Shelf
-    Item {
-        anchors.top: header.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.leftMargin: 80
-        anchors.rightMargin: 80
-
-        ListView {
-            id: appGrid
-            anchors.fill: parent
-            orientation: ListView.Horizontal
-            spacing: 40
-            model: launcherModel
-            focus: true
-            clip: false
-
-            // Snapping behavior tailored for TV remotes
-            snapMode: ListView.SnapToItem
-            keyNavigationEnabled: true
-            keyNavigationWraps: true
-
-            delegate: FocusCard {
-                id: card
-                title: model.title
-                tag: model.tag
-                accentColor: index % 2 === 0 ? StyleTokens.neonAqua : StyleTokens.neonPurple
-
-                onActivated: {
-                    launcherModel.launchApp(index)
+                Text {
+                    text: "TV SHELL // BASE ARCHITECTURE"
+                    color: Theme.textPrimary
+                    font.pixelSize: Theme.px(44)
+                    font.bold: true
                 }
 
-                // D-Pad Focus chain
-                focus: index === 0
+                Rectangle {
+                    width: Theme.px(3)
+                    height: Theme.px(40)
+                    color: Theme.textSecondary
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Text {
+                    id: statusText
+                    text: "READY (USE D-PAD / ARROWS)"
+                    color: Theme.textAccent
+                    font.pixelSize: Theme.px(26)
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+            }
+        }
+
+        // Horizontal Focus Rail
+        Row {
+            id: contentRail
+            anchors.centerIn: parent
+            spacing: Theme.px(50)
+
+            ShellFocusScope {
+                id: card1
+                labelText: "SHELF ITEM 1"
+                focus: true
+                KeyNavigation.right: card2
+                onActivated: statusText.text = "ACTIVATED: SHELF ITEM 1"
+            }
+
+            ShellFocusScope {
+                id: card2
+                labelText: "SHELF ITEM 2"
+                KeyNavigation.left: card1
+                KeyNavigation.right: card3
+                onActivated: statusText.text = "ACTIVATED: SHELF ITEM 2"
+            }
+
+            ShellFocusScope {
+                id: card3
+                labelText: "SHELF ITEM 3"
+                KeyNavigation.left: card2
+                onActivated: statusText.text = "ACTIVATED: SHELF ITEM 3"
+            }
+        }
+
+        // 10-foot UX Safe Zone Overlay Guide (Bottom HUD)
+        Item {
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: Theme.px(120)
+
+            Text {
+                anchors.centerIn: parent
+                text: "NAVIGATE: [LEFT/RIGHT]   |   SELECT: [ENTER]   |   MENU: [M]   |   BACK: [ESC]"
+                color: Theme.textSecondary
+                font.pixelSize: Theme.px(22)
+                font.letterSpacing: 1.5
             }
         }
     }

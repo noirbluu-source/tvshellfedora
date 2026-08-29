@@ -7,18 +7,25 @@
 struct AppItem {
     QString id;
     QString title;
+    QString subtitle;
     QString icon;
-    QString tag;
+    QString command;
+    QString category;
+    bool enabled;
 };
 
 class AppLauncherModel : public QAbstractListModel {
     Q_OBJECT
+
 public:
     enum AppRoles {
         IdRole = Qt::UserRole + 1,
         TitleRole,
+        SubtitleRole,
         IconRole,
-        TagRole
+        CommandRole,
+        CategoryRole,
+        EnabledRole
     };
 
     explicit AppLauncherModel(QObject *parent = nullptr);
@@ -27,8 +34,11 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
 
-    Q_INVOKABLE void launchApp(int index);
+    // Extensible helper methods
+    Q_INVOKABLE QVariantMap get(int row) const;
+    Q_INVOKABLE int count() const;
 
 private:
+    void loadInitialApplications();
     QVector<AppItem> m_apps;
 };

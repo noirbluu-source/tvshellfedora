@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(TVShell LANGUAGES CXX)
+project(tvshell LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -12,8 +12,6 @@ qt_add_executable(tvshell
     src/main.cpp
     src/input/RemoteKeyFilter.hpp
     src/input/RemoteKeyFilter.cpp
-    src/models/AppLauncherModel.hpp
-    src/models/AppLauncherModel.cpp
 )
 
 qt_add_qml_module(tvshell
@@ -21,9 +19,8 @@ qt_add_qml_module(tvshell
     VERSION 1.0
     QML_FILES
         qml/Main.qml
-        qml/style/StyleTokens.qml
-        qml/components/FocusCard.qml
-        qml/components/NeonBadge.qml
+        qml/style/Theme.qml
+        qml/components/ShellFocusScope.qml
 )
 
 target_link_libraries(tvshell PRIVATE

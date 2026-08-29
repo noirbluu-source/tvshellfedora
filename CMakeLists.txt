@@ -12,6 +12,8 @@ qt_add_executable(tvshell
     src/main.cpp
     src/input/RemoteKeyFilter.hpp
     src/input/RemoteKeyFilter.cpp
+    src/models/AppLauncherModel.hpp
+    src/models/AppLauncherModel.cpp
 )
 
 qt_add_qml_module(tvshell

@@ -20,7 +20,9 @@ qt_add_qml_module(tvshell
     QML_FILES
         qml/Main.qml
         qml/style/Theme.qml
-        qml/components/ShellFocusScope.qml
+        qml/navigation/FocusManager.qml
+        qml/components/ZoneFocusScope.qml
+        qml/components/FocusCard.qml
 )
 
 target_link_libraries(tvshell PRIVATE

@@ -2,9 +2,9 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include "input/RemoteKeyFilter.hpp"
+#include "models/AppLauncherModel.hpp"
 
 int main(int argc, char *argv[]) {
-    // Standard Wayland and threaded Mesa render pipeline settings
     qputenv("QT_QPA_PLATFORM", "wayland");
     qputenv("QSG_RENDER_LOOP", "threaded");
 
@@ -13,6 +13,10 @@ int main(int argc, char *argv[]) {
     app.setOrganizationName("TVShell");
 
     QQmlApplicationEngine engine;
+
+    // Instantiate and expose the application model
+    AppLauncherModel appLauncherModel;
+    engine.rootContext()->setContextProperty("appLauncherModel", &appLauncherModel);
 
     RemoteKeyFilter keyFilter;
     app.installEventFilter(&keyFilter);

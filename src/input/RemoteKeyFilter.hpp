@@ -10,8 +10,8 @@ public:
     explicit RemoteKeyFilter(QObject *parent = nullptr);
 
 signals:
-    void backTriggered();
-    void menuTriggered();
+    void backRequested();
+    void menuRequested();
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;

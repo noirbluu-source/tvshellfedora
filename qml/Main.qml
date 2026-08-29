@@ -20,7 +20,6 @@ Window {
         Theme.scaleFactor = Math.min(scaleW, scaleH) > 0 ? Math.min(scaleW, scaleH) : 1.0
     }
 
-    // Connect C++ RemoteKeyFilter events
     function handleBack() {
         FocusManager.backRequested()
     }
@@ -31,7 +30,12 @@ Window {
     Connections {
         target: FocusManager
         function onItemActivated(zone, index) {
-            eventFeedback.text = "ACTIVATE -> " + FocusManager.zoneName(zone) + " [ITEM " + index + "]"
+            if (zone === FocusManager.Zone.MainAppList) {
+                var app = appLauncherModel.get(index)
+                eventFeedback.text = "SELECTED: " + app.title + " (CMD: " + app.command + ")"
+            } else {
+                eventFeedback.text = "ACTIVATE -> " + FocusManager.zoneName(zone) + " [INDEX " + index + "]"
+            }
         }
         function onBackRequested() {
             eventFeedback.text = "EVENT -> BACK TRIGGERED (ESC / BACK)"
@@ -47,7 +51,7 @@ Window {
         anchors.margins: Theme.px(60)
 
         // ==========================================
-        // ZONE 3: TOP WINDOW & SYSTEM CONTROLS
+        // ZONE 3: TOP CONTROLS
         // ==========================================
         Item {
             id: zone3Container
@@ -62,7 +66,7 @@ Window {
                 spacing: Theme.px(20)
 
                 Text {
-                    text: "TV SHELL // FOCUS ENGINE"
+                    text: "TV SHELL // APP SUBSYSTEM"
                     color: Theme.textAccent
                     font.pixelSize: Theme.px(32)
                     font.bold: true
@@ -83,7 +87,7 @@ Window {
         }
 
         // ==========================================
-        // ZONE 1: ROTARY APPLICATION MENU (LEFT RAIL)
+        // ZONE 1: ROTARY MENU
         // ==========================================
         Item {
             id: zone1Container
@@ -92,11 +96,11 @@ Window {
             anchors.left: parent.left
             anchors.topMargin: Theme.px(30)
             anchors.bottomMargin: Theme.px(30)
-            width: Theme.px(500)
+            width: Theme.px(480)
 
             Text {
                 id: zone1Header
-                text: "ZONE 1: ROTARY MENU"
+                text: "ZONE 1: CATEGORIES"
                 color: Theme.textSecondary
                 font.pixelSize: Theme.px(20)
                 font.bold: true
@@ -112,12 +116,12 @@ Window {
                 anchors.bottom: parent.bottom
                 isHorizontal: false
                 itemSpacing: Theme.px(16)
-                model: ["HOME / LAUNCHER", "MEDIA LIBRARY", "ARCADE EMULATOR", "SETTINGS"]
+                model: ["ALL APPS", "MEDIA", "SYSTEM", "UTILITIES"]
             }
         }
 
         // ==========================================
-        // ZONE 2: MAIN APPLICATION LIST (CENTER RAIL)
+        // ZONE 2: MAIN APPLICATION LIST (FROM C++ MODEL)
         // ==========================================
         Item {
             id: zone2Container
@@ -131,7 +135,7 @@ Window {
 
             Text {
                 id: zone2Header
-                text: "ZONE 2: MAIN APP LIST"
+                text: "ZONE 2: APPLICATIONS (C++ MODEL)"
                 color: Theme.textSecondary
                 font.pixelSize: Theme.px(20)
                 font.bold: true
@@ -147,13 +151,7 @@ Window {
                 anchors.bottom: parent.bottom
                 isHorizontal: false
                 itemSpacing: Theme.px(16)
-                model: [
-                    "01. CYBERSTREAM VIDEO PLAYER",
-                    "02. RETRO ARCH CONSOLE",
-                    "03. SYSTEM MONITOR & HARDWARE STATS",
-                    "04. WAYLAND DESKTOP KIOSK SUB-SURFACE",
-                    "05. AUDIO MATRIX / SOUND SETTINGS"
-                ]
+                model: appLauncherModel
             }
         }
 

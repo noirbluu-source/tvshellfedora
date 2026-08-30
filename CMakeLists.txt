@@ -28,6 +28,8 @@ qt_add_qml_module(tvshell
         qml/components/background/IndustrialBackground.qml
         qml/components/background/GelLayer.qml
         qml/components/background/HalftoneGrid.qml
+        qml/components/materials/HolographicBorder.qml
+        qml/components/materials/FocusChromeFrame.qml
 )
 
 target_link_libraries(tvshell PRIVATE

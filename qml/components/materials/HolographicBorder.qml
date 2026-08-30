@@ -67,9 +67,18 @@ Item {
 
         gradient: Gradient {
             orientation: Gradient.Horizontal
-            GradientStop { position: 0.0; color: "transparent" }
-            GradientStop { position: 0.5; color: "rgba(255, 255, 255, 0.45)" }
-            GradientStop { position: 1.0; color: "transparent" }
+            GradientStop {
+                position: 0.0
+                color: "transparent"
+            }
+            GradientStop {
+                position: 0.5
+                color: Qt.rgba(1.0, 1.0, 1.0, 0.45)
+            }
+            GradientStop {
+                position: 1.0
+                color: "transparent"
+            }
         }
 
         SequentialAnimation {

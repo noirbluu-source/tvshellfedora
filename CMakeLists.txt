@@ -30,6 +30,7 @@ qt_add_qml_module(tvshell
         qml/components/background/HalftoneGrid.qml
         qml/components/materials/HolographicBorder.qml
         qml/components/materials/FocusChromeFrame.qml
+        qml/components/widgets/RotaryDialRail.qml
 )
 
 target_link_libraries(tvshell PRIVATE

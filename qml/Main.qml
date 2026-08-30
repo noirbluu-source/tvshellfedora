@@ -83,7 +83,9 @@ Window {
             }
         }
 
-        // ZONE 1: LEFT ROTARY MECHANICAL DIAL
+// =====================================================================
+        // ZONE 1: ROTARY DIAL RAIL (LEFT RAIL)
+        // =====================================================================
         Item {
             id: zone1Container
             anchors.top: topBar.bottom
@@ -93,11 +95,11 @@ Window {
             anchors.bottomMargin: Theme.px(20)
             width: Theme.px(540)
 
-            RotaryMenu {
-                id: rotaryMenu
+            RotaryDialRail {
+                id: rotaryDial
                 anchors.fill: parent
-                onItemActivated: function(idx) {
-                    dockBar.statusMessage = "CATEGORY // " + itemsModel[idx].label
+                onItemSelected: function(idx) {
+                    dockBar.statusMessage = "CATEGORY // " + model[idx]
                 }
             }
         }

@@ -9,7 +9,7 @@ FocusScope {
     property int currentIndex: 0
     readonly property int count: repeaterLoader.item ? repeaterLoader.item.count : 0
     property bool isHorizontal: false
-    property real itemSpacing: Theme.px(20)
+    property real itemSpacing: Theme.px(18)
 
     signal itemSelected(int index)
 
@@ -106,10 +106,10 @@ FocusScope {
             Repeater {
                 id: rep
                 model: root.model
-                delegate: FocusCard {
+                delegate: AppCard {
                     width: root.width > 0 ? (root.width - (root.itemSpacing * (rep.count - 1))) / rep.count : Theme.px(200)
                     height: root.height
-                    itemLabel: (typeof model.title !== "undefined") ? model.title : (typeof modelData !== "undefined" ? modelData : "")
+                    itemTitle: (typeof model.title !== "undefined") ? model.title : (typeof modelData !== "undefined" ? modelData : "")
                     itemSubtitle: (typeof model.subtitle !== "undefined") ? model.subtitle : ""
                     itemCategory: (typeof model.category !== "undefined") ? model.category : ""
                     isCurrent: (root.currentIndex === index) && root.activeFocus
@@ -132,10 +132,10 @@ FocusScope {
             Repeater {
                 id: rep
                 model: root.model
-                delegate: FocusCard {
+                delegate: AppCard {
                     width: root.width
-                    height: root.height > 0 ? (root.height - (root.itemSpacing * (rep.count - 1))) / rep.count : Theme.px(100)
-                    itemLabel: (typeof model.title !== "undefined") ? model.title : (typeof modelData !== "undefined" ? modelData : "")
+                    height: root.height > 0 ? (root.height - (root.itemSpacing * (rep.count - 1))) / rep.count : Theme.px(110)
+                    itemTitle: (typeof model.title !== "undefined") ? model.title : (typeof modelData !== "undefined" ? modelData : "")
                     itemSubtitle: (typeof model.subtitle !== "undefined") ? model.subtitle : ""
                     itemCategory: (typeof model.category !== "undefined") ? model.category : ""
                     isCurrent: (root.currentIndex === index) && root.activeFocus

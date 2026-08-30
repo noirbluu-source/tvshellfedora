@@ -25,15 +25,14 @@ qt_add_qml_module(tvshell
         qml/navigation/FocusManager.qml
         qml/components/ZoneFocusScope.qml
         qml/components/FocusCard.qml
+        qml/components/AppCard.qml
+        qml/components/RotaryMenu.qml
+        qml/components/RotaryIcon.qml
         qml/components/background/IndustrialBackground.qml
         qml/components/background/GelLayer.qml
         qml/components/background/HalftoneGrid.qml
         qml/components/materials/HolographicBorder.qml
         qml/components/materials/FocusChromeFrame.qml
-        qml/components/widgets/RotaryDialRail.qml
-        qml/components/widgets/TactileButton.qml
-        qml/components/widgets/IndustrialTopBar.qml
-        qml/components/widgets/GlassDockBar.qml
 )
 
 target_link_libraries(tvshell PRIVATE

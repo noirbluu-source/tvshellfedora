@@ -45,14 +45,27 @@ Window {
         }
     }
 
+    // =========================================================================
+    // BACKGROUND COMPOSITE (PHASE 2)
+    // =========================================================================
+    Item {
+        id: backgroundLayer
+        anchors.fill: parent
+
+        IndustrialBackground { id: industrialBg }
+        GelLayer { id: gelGlow }
+        HalftoneGrid { id: halftoneGrid }
+    }
+
+    // =========================================================================
+    // UI APPLICATION LAYER
+    // =========================================================================
     Item {
         id: shellContainer
         anchors.fill: parent
         anchors.margins: Theme.px(60)
 
-        // ==========================================
         // ZONE 3: TOP CONTROLS
-        // ==========================================
         Item {
             id: zone3Container
             anchors.top: parent.top
@@ -67,7 +80,7 @@ Window {
 
                 Text {
                     text: "TV SHELL // APP SUBSYSTEM"
-                    color: Theme.textAccent
+                    color: Theme.neonAqua
                     font.pixelSize: Theme.px(32)
                     font.bold: true
                 }
@@ -86,9 +99,7 @@ Window {
             }
         }
 
-        // ==========================================
         // ZONE 1: ROTARY MENU
-        // ==========================================
         Item {
             id: zone1Container
             anchors.top: zone3Container.bottom
@@ -120,9 +131,7 @@ Window {
             }
         }
 
-        // ==========================================
-        // ZONE 2: MAIN APPLICATION LIST (FROM C++ MODEL)
-        // ==========================================
+        // ZONE 2: MAIN APPLICATION LIST
         Item {
             id: zone2Container
             anchors.top: zone3Container.bottom
@@ -155,9 +164,7 @@ Window {
             }
         }
 
-        // ==========================================
-        // ZONE 4: BOTTOM NAVIGATION / HELP BAR
-        // ==========================================
+        // ZONE 4: BOTTOM BAR
         Item {
             id: zone4Container
             anchors.bottom: parent.bottom
@@ -167,8 +174,8 @@ Window {
 
             Rectangle {
                 anchors.fill: parent
-                color: Theme.surfaceBase
-                radius: Theme.px(8)
+                color: Theme.smokedGlassDeep
+                radius: Theme.radiusMD
                 border.color: Theme.borderBase
                 border.width: Theme.px(1)
 
@@ -181,7 +188,7 @@ Window {
                     Text {
                         id: eventFeedback
                         text: "STATUS: READY"
-                        color: Theme.textAccent
+                        color: Theme.neonAqua
                         font.pixelSize: Theme.px(24)
                         font.bold: true
                     }

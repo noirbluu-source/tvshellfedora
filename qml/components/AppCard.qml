@@ -13,32 +13,58 @@ Item {
 
     signal cardClicked()
 
-    implicitWidth: Theme.px(820)
-    implicitHeight: Theme.px(120)
+    implicitWidth: Theme.px(860)
+    implicitHeight: Theme.px(136)
 
-    // Outer Ambient Glow on Focus
+    // =========================================================================
+    // STAGE 2 & 6: CONTRAST SUPPRESSION BED & DEEP NEUMORPHIC SHADOW
+    // =========================================================================
     Rectangle {
+        id: depthShadow
         anchors.fill: parent
-        anchors.margins: -Theme.px(4)
-        radius: Theme.radiusMD + Theme.px(2)
+        anchors.topMargin: root.isCurrent ? Theme.px(10) : Theme.px(4)
+        anchors.leftMargin: -Theme.px(4)
+        anchors.rightMargin: -Theme.px(4)
+        anchors.bottomMargin: root.isCurrent ? -Theme.px(12) : -Theme.px(4)
+        radius: Theme.radiusMD + Theme.px(4)
+        color: Theme.bgVoid
+        opacity: root.isCurrent ? 0.95 : 0.40
+
+        Behavior on opacity {
+            NumberAnimation { duration: Theme.animFast }
+        }
+    }
+
+    // =========================================================================
+    // STAGE 5: DIFFUSE PERIMETER AURA & EDGE GLOW
+    // =========================================================================
+    Rectangle {
+        id: edgeGlow
+        anchors.fill: parent
+        anchors.margins: -Theme.px(10)
+        radius: Theme.radiusMD + Theme.px(6)
         color: "transparent"
-        border.width: Theme.px(2)
+        border.width: Theme.px(6)
         border.color: Theme.neonAqua
-        opacity: root.isCurrent ? 0.6 : 0.0
+        opacity: root.isCurrent ? 0.70 : 0.0
 
         Behavior on opacity {
             NumberAnimation { duration: Theme.animFast; easing.type: Easing.OutQuad }
         }
     }
 
-    // Industrial Chassis Base Plate
+    // =========================================================================
+    // STAGE 3: BRUTALIST CHASSIS BASE WITH STRENGTHENED CHROME BEVELS
+    // =========================================================================
     Rectangle {
         id: chassisBase
         anchors.fill: parent
         radius: Theme.radiusMD
         color: root.isCurrent ? Theme.surfacePlateRaised : Theme.surfacePlate
-        border.width: root.isCurrent ? Theme.px(3) : Theme.px(1)
-        border.color: root.isCurrent ? Theme.neonAqua : Theme.chromeDark
+
+        // Outer Structural Machined Frame
+        border.width: root.isCurrent ? Theme.px(4) : Theme.px(2)
+        border.color: root.isCurrent ? Theme.chromeHighlight : Theme.chromeDark
 
         Behavior on border.color {
             ColorAnimation { duration: Theme.animFast }
@@ -47,66 +73,152 @@ Item {
             ColorAnimation { duration: Theme.animFast }
         }
 
-        // Top-Left 45-degree Specular Rim Chamfer
+        // Top/Left Incident Chrome Bezel (45-degree Specular Chamfer)
         Rectangle {
             anchors.fill: parent
             radius: Theme.radiusMD
             color: "transparent"
-            border.width: Theme.px(1)
+            border.width: root.isCurrent ? Theme.px(2) : Theme.px(1)
             border.color: root.isCurrent ? Theme.chromeHighlight : Theme.bevelLight
-            opacity: root.isCurrent ? 0.8 : 0.25
+            opacity: root.isCurrent ? 1.0 : 0.35
         }
 
-        // Bottom Occlusion Line for Physical Depth
+        // Inner Gel & Smoked Acrylic Core
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: Theme.px(3)
+            radius: Math.max(0, Theme.radiusMD - Theme.px(3))
+            color: root.isCurrent ? Theme.gelAcidGreenTranslucent : Theme.surfaceRecessed
+            opacity: root.isCurrent ? 0.90 : 0.95
+
+            // Top Specular Glass Lip Reflection
+            Rectangle {
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: parent.height * 0.45
+                radius: Math.max(0, Theme.radiusMD - Theme.px(3))
+                color: Qt.rgba(1.0, 1.0, 1.0, root.isCurrent ? 0.18 : 0.03)
+            }
+        }
+
+        // Halftone Matrix Tech Decal (Right Side)
+        Canvas {
+            id: halftoneDecal
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.margins: Theme.px(12)
+            width: Theme.px(140)
+            opacity: root.isCurrent ? 0.65 : 0.18
+
+            onPaint: {
+                var ctx = getContext("2d");
+                ctx.clearRect(0, 0, width, height);
+                var step = Theme.px(10);
+                ctx.fillStyle = root.isCurrent ? "#00F5D4" : "#8FA3B5";
+
+                for (var x = 0; x < width; x += step) {
+                    for (var y = 0; y < height; y += step) {
+                        ctx.fillRect(x, y, 1.5, 1.5);
+                    }
+                }
+            }
+        }
+
+        // Glitch Tech Striations
+        Row {
+            anchors.top: parent.top
+            anchors.topMargin: Theme.px(6)
+            anchors.right: parent.right
+            anchors.rightMargin: Theme.px(24)
+            spacing: Theme.px(4)
+            opacity: root.isCurrent ? 0.9 : 0.2
+
+            Repeater {
+                model: 6
+                Rectangle {
+                    width: (index % 2 === 0) ? Theme.px(8) : Theme.px(3)
+                    height: Theme.px(3)
+                    color: root.isCurrent ? Theme.neonPinkBright : Theme.chromeMid
+                }
+            }
+        }
+
+        // Bottom/Right Deep Occlusion Chamfer (Physical 3D Drop)
         Rectangle {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            height: Theme.px(2)
+            height: Theme.px(3)
             radius: Theme.radiusMD
-            color: root.isCurrent ? Theme.chromeDark : Theme.bevelDarkDeep
-            opacity: 0.8
+            color: root.isCurrent ? Theme.neonPurple : Theme.bevelDark
+            opacity: 0.95
         }
     }
 
-    // Card Content Row
+    // =========================================================================
+    // STAGE 4 & 7: HOLOGRAPHIC PINK/AQUA/SILVER LIGHTING & SHEEN SWEEP
+    // =========================================================================
+    HolographicBorder {
+        id: holoLayer
+        active: root.isCurrent
+        cornerRadius: Theme.radiusMD
+    }
+
+    // =========================================================================
+    // 10-FOOT TV HIGH-CONTRAST TYPOGRAPHY & HARDWARE WELLS
+    // =========================================================================
     Row {
         anchors.fill: parent
         anchors.leftMargin: Theme.px(24)
         anchors.rightMargin: Theme.px(24)
-        spacing: Theme.px(20)
+        spacing: Theme.px(22)
 
-        // Left: Chunky Hardware Icon Well
+        // Left Hardware Socket Well
         Rectangle {
-            id: iconWell
-            width: Theme.px(74)
-            height: Theme.px(74)
+            id: iconSocket
+            width: Theme.px(88)
+            height: Theme.px(88)
             radius: Theme.radiusSM
             anchors.verticalCenter: parent.verticalCenter
-            color: root.isCurrent ? Theme.surfaceRecessed : Theme.concreteChassis
-            border.color: root.isCurrent ? Theme.neonAqua : Theme.chromeDark
+            color: root.isCurrent ? Theme.surfacePlateRaised : Theme.surfaceRecessed
+            border.color: root.isCurrent ? Theme.neonAquaBright : Theme.chromeDark
             border.width: Theme.px(2)
+
+            Rectangle {
+                anchors.fill: parent
+                radius: Theme.radiusSM
+                color: "transparent"
+                border.color: root.isCurrent ? Theme.chromeHighlight : Theme.bevelLight
+                border.width: Theme.px(1)
+                opacity: 0.6
+            }
 
             Text {
                 anchors.centerIn: parent
                 text: {
-                    if (root.itemTitle.indexOf("YouTube") !== -1) return "▶";
-                    if (root.itemTitle.indexOf("VLC") !== -1) return "▲";
-                    if (root.itemTitle.indexOf("File") !== -1) return "📁";
-                    if (root.itemTitle.indexOf("Settings") !== -1) return "⚙";
-                    if (root.itemTitle.indexOf("Store") !== -1) return "✦";
+                    var t = root.itemTitle.toUpperCase();
+                    if (t.indexOf("YOUTUBE") !== -1) return "▶";
+                    if (t.indexOf("VLC") !== -1) return "▲";
+                    if (t.indexOf("FILE") !== -1) return "📁";
+                    if (t.indexOf("SETTINGS") !== -1) return "⚙";
+                    if (t.indexOf("STORE") !== -1) return "✦";
                     return "■";
                 }
-                color: root.isCurrent ? Theme.neonAquaBright : Theme.chromeMid
-                font.pixelSize: Theme.px(30)
+                color: root.isCurrent ? Theme.neonAquaBright : Theme.chromeBright
+                font.pixelSize: Theme.px(38)
                 font.bold: true
+
+                style: root.isCurrent ? Text.Outline : Text.Normal
+                styleColor: Theme.bevelDark
             }
         }
 
-        // Center: Title, Subtitle, and Category Pill
+        // Center Titles and Badges
         Column {
             anchors.verticalCenter: parent.verticalCenter
-            width: parent.width - iconWell.width - rightControl.width - (parent.spacing * 2)
+            width: parent.width - iconSocket.width - rightWell.width - (parent.spacing * 2)
             spacing: Theme.px(4)
 
             Row {
@@ -115,27 +227,27 @@ Item {
 
                 Text {
                     id: titleText
-                    text: root.itemTitle
+                    text: root.itemTitle.toUpperCase()
                     color: root.isCurrent ? Theme.textPrimary : Theme.chromeBright
                     font.pixelSize: Theme.fontTitle
                     font.bold: true
-                    font.letterSpacing: 1.0
+                    font.letterSpacing: 1.5
                     elide: Text.ElideRight
-                    width: Math.min(implicitWidth, parent.width - (catBadge.visible ? catBadge.width + parent.spacing : 0))
+                    width: Math.min(implicitWidth, parent.width - (catPill.visible ? catPill.width + parent.spacing : 0))
 
                     style: root.isCurrent ? Text.Outline : Text.Normal
-                    styleColor: Qt.rgba(0, 0, 0, 0.9)
+                    styleColor: Qt.rgba(0, 0, 0, 0.95)
                 }
 
                 Rectangle {
-                    id: catBadge
+                    id: catPill
                     visible: root.itemCategory.length > 0
-                    width: catLabel.implicitWidth + Theme.px(16)
+                    width: catLabel.implicitWidth + Theme.px(18)
                     height: catLabel.implicitHeight + Theme.px(6)
                     radius: Theme.radiusSharp
                     anchors.verticalCenter: parent.verticalCenter
-                    color: root.isCurrent ? Theme.neonPurple : Theme.surfaceRecessed
-                    border.color: root.isCurrent ? Theme.neonPink : Theme.chromeDark
+                    color: root.isCurrent ? Theme.neonPink : Theme.surfaceRecessed
+                    border.color: root.isCurrent ? Theme.neonPinkBright : Theme.chromeDark
                     border.width: Theme.px(1)
 
                     Text {
@@ -145,7 +257,7 @@ Item {
                         color: root.isCurrent ? Theme.chromeHighlight : Theme.textSecondary
                         font.pixelSize: Theme.fontMicro
                         font.bold: true
-                        font.letterSpacing: 1.2
+                        font.letterSpacing: 1.5
                     }
                 }
             }
@@ -160,36 +272,47 @@ Item {
             }
         }
 
-        // Right: Focus Glyph Well
+        // Right Directional Trigger Well
         Item {
-            id: rightControl
-            width: Theme.px(40)
+            id: rightWell
+            width: Theme.px(48)
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
 
             Rectangle {
                 anchors.centerIn: parent
-                width: Theme.px(36)
-                height: Theme.px(36)
-                radius: width / 2
-                color: root.isCurrent ? Theme.neonAqua : Theme.surfaceRecessed
+                width: Theme.px(42)
+                height: Theme.px(42)
+                radius: Theme.radiusSM
+                color: root.isCurrent ? Theme.neonAquaBright : Theme.surfaceRecessed
                 border.color: root.isCurrent ? Theme.chromeHighlight : Theme.chromeDark
                 border.width: Theme.px(1)
+
+                Rectangle {
+                    anchors.fill: parent
+                    radius: Theme.radiusSM
+                    color: "transparent"
+                    border.color: Theme.bevelLight
+                    border.width: Theme.px(1)
+                    opacity: 0.5
+                }
 
                 Text {
                     anchors.centerIn: parent
                     text: root.itemGlyph
                     color: root.isCurrent ? Theme.textInverse : Theme.textDisabled
-                    font.pixelSize: Theme.px(16)
+                    font.pixelSize: Theme.px(18)
                     font.bold: true
                 }
             }
         }
     }
 
-    // Scale & Elevation on Focus
+    // =========================================================================
+    // STAGE 1: SMOOTH SCALE & ELEVATION POP
+    // =========================================================================
     scale: root.isPressed ? Theme.pressedScale : (root.isCurrent ? Theme.focusScaleCard : 1.0)
-    z: root.isCurrent ? 10 : 1
+    z: root.isCurrent ? 25 : 1
 
     Behavior on scale {
         NumberAnimation {

@@ -14,24 +14,25 @@ int main(int argc, char *argv[]) {
 
     QQmlApplicationEngine engine;
 
-    // Instantiate and expose the application model
     AppLauncherModel appLauncherModel;
     engine.rootContext()->setContextProperty("appLauncherModel", &appLauncherModel);
 
     RemoteKeyFilter keyFilter;
     app.installEventFilter(&keyFilter);
 
-    const QUrl url(u"qrc:/qt/qml/TVShell/qml/Main.qml"_qs);
+    QObject::connect(
+        &engine,
+        &QQmlApplicationEngine::objectCreationFailed,
+        &app,
+        []() { QCoreApplication::exit(-1); },
+        Qt::QueuedConnection
+    );
 
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreated,
         &app,
-        [url, &keyFilter](QObject *obj, const QUrl &objUrl) {
-            if (!obj && url == objUrl) {
-                QCoreApplication::exit(-1);
-                return;
-            }
+        [&keyFilter](QObject *obj, const QUrl &) {
             if (obj) {
                 QObject::connect(&keyFilter, SIGNAL(backRequested()), obj, SLOT(handleBack()));
                 QObject::connect(&keyFilter, SIGNAL(menuRequested()), obj, SLOT(handleMenu()));
@@ -40,7 +41,8 @@ int main(int argc, char *argv[]) {
         Qt::QueuedConnection
     );
 
-    engine.load(url);
+    // Modern Qt 6 QML module loading API
+    engine.loadFromModule("TVShell", "Main");
 
     return app.exec();
 }

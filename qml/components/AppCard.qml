@@ -119,7 +119,7 @@ Item {
                     color: root.isCurrent ? Theme.textPrimary : Theme.chromeBright
                     font.pixelSize: Theme.fontTitle
                     font.bold: true
-                    letterSpacing: 1.0
+                    font.letterSpacing: 1.0
                     elide: Text.ElideRight
                     width: Math.min(implicitWidth, parent.width - (catBadge.visible ? catBadge.width + parent.spacing : 0))
 

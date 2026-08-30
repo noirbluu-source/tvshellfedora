@@ -5,105 +5,103 @@ QtObject {
     id: root
 
     // =========================================================================
-    // 1. BASE REFERENCE RESOLUTION & DYNAMIC SCALING
+    // 1. DYNAMIC 4K/1080P SCALING ENGINE
     // =========================================================================
-    // Target base reference is 4K UHD (3840 x 2160).
-    // Automatically downscales to 1080p (scaleFactor = 0.5) while maintaining
-    // pixel-crisp 10-foot legibility and proportional alignment.
     readonly property real baseWidth: 3840.0
     readonly property real baseHeight: 2160.0
 
+    // Dynamic scale factor updated by root Window
     property real scaleFactor: 1.0
 
-    // Coordinate scaler with integer rounding to prevent subpixel blur on Mesa/DRM
+    // Coordinate scaler with integer snapping to avoid DRM subpixel artifacts
     function px(value) {
         return Math.round(value * scaleFactor)
     }
 
-    // =========================================================================
-    // 2. INDUSTRIAL SURFACES & CONCRETE (Brutalism & Neumorphism Base)
-    // =========================================================================
-    readonly property color bgDark: "#0A0C0E"            // Deep cold void background
-    readonly property color bgConcrete: "#12151A"        // Dark industrial cast concrete
-    readonly property color concreteChassis: "#181D24"   // Heavy slab body
-    readonly property color surfacePlate: "#1E242D"      // Extruded brutalist plate
-    readonly property color surfacePlateRaised: "#262E3A"// Elevated tactile surface
-    readonly property color surfaceRecessed: "#0E1115"   // Debossed/machined slot
+    // Dynamic font scaler enforcing 10-foot TV safe minimums
+    function pt(pixelSize4K, minSize1080p) {
+        var scaled = Math.round(pixelSize4K * scaleFactor)
+        var floorLimit = (typeof minSize1080p !== "undefined") ? minSize1080p : 14
+        return Math.max(floorLimit, scaled)
+    }
 
     // =========================================================================
-    // 3. SMOKED ACRYLIC & LIQUID GEL (Glassmorphism & Y2K Plastics)
+    // 2. INDUSTRIAL SURFACES & CONCRETE BASE
     // =========================================================================
-    readonly property color smokedGlassBg: "#990C0F14"    // 60% smoked acrylic
-    readonly property color smokedGlassDeep: "#CC07090C"  // 80% heavy dark filter
-    readonly property color liquidGelSurface: "#33223042" // Specular gel sheen layer
-    readonly property color glassRefractionEdge: "#40FFFFFF" // 1px physical rim light
-    readonly property color liquidGelHighlight: "#8058A6FF"  // Sub-surface refraction
+    readonly property color bgVoid: "#06080A"
+    readonly property color bgDark: "#080A0D"
+    readonly property color bgConcreteDark: "#0B0E13"
+    readonly property color bgConcreteMid: "#12161D"
+    readonly property color concreteChassis: "#181D26"
+    readonly property color surfacePlate: "#1F2530"
+    readonly property color surfacePlateRaised: "#293240"
+    readonly property color surfaceRecessed: "#090C10"
 
     // =========================================================================
-    // 4. CHROME & SPECULAR METALS (Y2K Mechanical Finishes)
+    // 3. SMOKED ACRYLIC & OPTICAL GEL
     // =========================================================================
-    readonly property color chromeHighlight: "#FFFFFF"    // Specular peak light
-    readonly property color chromeBright: "#DCE5ED"       // High-reflective silver
-    readonly property color chromeMid: "#8FA3B5"          // Brushed aluminum body
-    readonly property color chromeDark: "#3E4954"         // Anodized dark metal
-    readonly property color chromeShadow: "#171B20"       // Deep bevel shadow
+    readonly property color smokedGlassBg: "#990C0F14"
+    readonly property color smokedGlassDeep: "#CC07090C"
+    readonly property color gelPurpleTranslucent: "#2E1A47"
+    readonly property color gelAcidGreenTranslucent: "#1A3824"
+    readonly property color gelSpecularSheen: "#33FFFFFF"
+    readonly property color glassRefractionEdge: "#40FFFFFF"
 
     // =========================================================================
-    // 5. RAW INDUSTRIAL BRASS & GOLD ALLOY (Heavy Hardware & Physical Buttons)
+    // 4. METALS & CHROME BEVELS
     // =========================================================================
-    readonly property color brassHighlight: "#FFF2C4"     // Polished brass edge reflection
-    readonly property color brassPrimary: "#E5B869"       // Solid mechanical brass
-    readonly property color brassMid: "#C8963E"          // Machined raw brass body
-    readonly property color brassShadow: "#7A5518"        // Beveled brass drop-shadow
-    readonly property color brassRecessed: "#3D2B0C"      // Stamped rivet / socket depth
+    readonly property color chromeHighlight: "#FFFFFF"
+    readonly property color chromeBright: "#DCE5ED"
+    readonly property color chromeMid: "#8FA3B5"
+    readonly property color chromeDark: "#3E4954"
+    readonly property color chromeShadow: "#171B20"
 
     // =========================================================================
-    // 6. HOLOGRAPHIC & NEON PALETTE (Spectral Focus, CRT & Cyber Glows)
+    // 5. RAW BRASS & HARDWARE ALLOYS
     // =========================================================================
-    // Purple / Electric Violet
-    readonly property color neonPurple: "#9B5DE5"         // Primary cyber violet
-    readonly property color neonPurpleBright: "#B47CFF"   // Peak fluorescent purple
-    readonly property color neonPurpleGlow: "#4D9B5DE5"   // 30% alpha halo
-
-    // Aqua / Cyan
-    readonly property color neonAqua: "#00F5D4"           // High-contrast cyber cyan
-    readonly property color neonAquaBright: "#70FFF0"     // Supercharged aqua white
-    readonly property color neonAquaGlow: "#4D00F5D4"     // 30% alpha halo
-
-    // Neon Pink / Hot Magenta
-    readonly property color neonPink: "#FF007F"           // Y2K chromatic pink
-    readonly property color neonPinkBright: "#FF4DA6"     // Glowing magenta core
-    readonly property color neonPinkGlow: "#4DFF007F"     // 30% alpha halo
-
-    // CRT Phosphor Green & Warnings
-    readonly property color phosphorGreen: "#00FF66"      // Retro terminal readout
-    readonly property color alertAmber: "#FF9E00"         // Hardware diagnostic amber
+    readonly property color brassHighlight: "#FFF2C4"
+    readonly property color brassPrimary: "#E5B869"
+    readonly property color brassMid: "#C8963E"
+    readonly property color brassShadow: "#7A5518"
+    readonly property color brassRecessed: "#3D2B0C"
 
     // =========================================================================
-    // 7. NEUMORPHIC BEVELS & SHADOW PAIRS (Light Source at Top-Left 45°)
+    // 6. NEON EMISSIVE PALETTE
     // =========================================================================
-    readonly property color bevelLight: "#33FFFFFF"       // Top/Left incident highlight (20%)
-    readonly property color bevelLightSharp: "#66FFFFFF"  // 1px intense chamfer (40%)
-    readonly property color bevelDark: "#80000000"        // Bottom/Right shadow (50%)
-    readonly property color bevelDarkDeep: "#E6000000"    // Deep cavity occlusion (90%)
+    readonly property color neonAcidGreen: "#39FF14"
+    readonly property color neonAcidGreenBright: "#80FF66"
+    readonly property color phosphorGreen: "#00FF66"
+    readonly property color neonPurple: "#9B5DE5"
+    readonly property color neonPurpleBright: "#C77DFF"
+    readonly property color neonAqua: "#00F5D4"
+    readonly property color neonAquaBright: "#80FFF0"
+    readonly property color neonPink: "#FF007F"
+    readonly property color neonPinkBright: "#FF4DA6"
 
     // =========================================================================
-    // 8. 10-FOOT TYPOGRAPHY SYSTEM (Scaled for 4K / High Contrast Legibility)
+    // 7. NEUMORPHIC BEVELS & SHADOW PAIRS
     // =========================================================================
-    // Font Sizes (Pixels in 4K UHD reference)
-    readonly property int fontDisplay: px(76)             // Hero headers & radial dial active item
-    readonly property int fontTitle: px(48)               // Shelf card titles & panel headers
-    readonly property int fontSection: px(34)             // Section categorizers & subtitles
-    readonly property int fontBody: px(26)                // Metadata, descriptions & button labels
-    readonly property int fontCaption: px(20)             // Status indicators, badges & key guides
-    readonly property int fontMicro: px(16)               // CRT telemetry & diagnostics
+    readonly property color bevelLight: "#26FFFFFF"
+    readonly property color bevelLightSharp: "#66FFFFFF"
+    readonly property color bevelDark: "#80000000"
+    readonly property color bevelDarkDeep: "#E6000000"
 
-    // Text Colors & Contrasts
-    readonly property color textPrimary: "#FFFFFF"        // 100% white for active focused text
-    readonly property color textSecondary: "#9EAAB6"      // High-contrast silver for unfocused text
-    readonly property color textMuted: "#556270"          // De-emphasized metadata
-    readonly property color textDisabled: "#313942"       // Disabled hardware items
-    readonly property color textInverse: "#0A0C0E"        // Text on bright brass / chrome pills
+    // =========================================================================
+    // 8. 10-FOOT TV TYPOGRAPHY SYSTEM (Enforces Legibility @ 10 Feet)
+    // =========================================================================
+    readonly property int fontDisplay: pt(76, 38)  // Large Dial Active Readout
+    readonly property int fontTitle: pt(46, 24)    // App Card Titles & Top Header
+    readonly property int fontSection: pt(32, 18)  // Category Readouts & Sub-headers
+    readonly property int fontBody: pt(24, 15)     // Subtitles, Metadata & CRT Lines
+    readonly property int fontCaption: pt(18, 12)  // Badges & Button Legends
+    readonly property int fontMicro: pt(14, 10)    // Telemetry & Hardware Badges
+
+    // High Contrast Typography Palette
+    readonly property color textPrimary: "#FFFFFF"
+    readonly property color textSecondary: "#9EABB8"
+    readonly property color textMuted: "#505C6A"
+    readonly property color textDisabled: "#313942"
+    readonly property color textInverse: "#06080A"
 
     // =========================================================================
     // 9. SPACING & PADDING METRICS
@@ -117,27 +115,26 @@ QtObject {
     readonly property real spacingXXL: px(80)
 
     // =========================================================================
-    // 10. CORNER RADII (Chunky Brutalist & Y2K Molded Plastics)
+    // 10. CORNER RADII
     // =========================================================================
-    readonly property real radiusSharp: px(2)             // Metal chamfers & badges
-    readonly property real radiusSM: px(6)                // Recessed slots & small buttons
-    readonly property real radiusMD: px(12)               // Main App cards & dialog plates
-    readonly property real radiusLG: px(20)               // Large outer containers & dock
-    readonly property real radiusPill: px(999)            // Capsule buttons & status pills
+    readonly property real radiusSharp: px(2)
+    readonly property real radiusSM: px(6)
+    readonly property real radiusMD: px(12)
+    readonly property real radiusLG: px(20)
+    readonly property real radiusPill: px(999)
 
     // =========================================================================
-    // 11. FOCUS SCALING & ELEVATION
+    // 11. FOCUS SCALING RATIOS
     // =========================================================================
-    readonly property real focusScaleCard: 1.06           // Distinct visual pop for large app cards
-    readonly property real focusScaleButton: 1.08         // Snappy physical button elevation
-    readonly property real focusScaleSubtle: 1.03         // Minor dial / status magnification
-    readonly property real pressedScale: 0.96             // Tactile depression on Enter/OK
+    readonly property real focusScaleCard: 1.05
+    readonly property real focusScaleButton: 1.08
+    readonly property real focusScaleDialItem: 1.30
+    readonly property real pressedScale: 0.97
 
     // =========================================================================
-    // 12. HARDWARE ANIMATION TIMINGS & EASING (GPU-Friendly, 60 FPS Locked)
+    // 12. GPU ANIMATION TIMINGS & CURVES
     // =========================================================================
-    readonly property int animInstant: 60                 // Micro-ticks & button depressions
-    readonly property int animFast: 120                   // Focus shifts, scale pops, border glow
-    readonly property int animNormal: 220                 // Zone transitions & dial rotation
-    readonly property int animSmooth: 360                 // Drawer / overlay expansions
+    readonly property int animInstant: 60
+    readonly property int animFast: 120
+    readonly property int animNormal: 200
 }

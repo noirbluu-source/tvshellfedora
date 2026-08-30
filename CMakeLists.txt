@@ -25,6 +25,9 @@ qt_add_qml_module(tvshell
         qml/navigation/FocusManager.qml
         qml/components/ZoneFocusScope.qml
         qml/components/FocusCard.qml
+        qml/components/background/IndustrialBackground.qml
+        qml/components/background/GelLayer.qml
+        qml/components/background/HalftoneGrid.qml
 )
 
 target_link_libraries(tvshell PRIVATE

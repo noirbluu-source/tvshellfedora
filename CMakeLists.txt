@@ -16,26 +16,24 @@ qt_add_executable(tvshell
     src/models/AppLauncherModel.cpp
 )
 
+set_source_files_properties(qml/Theme.qml PROPERTIES
+    QT_QML_SINGLETON_TYPE TRUE
+)
+
 qt_add_qml_module(tvshell
     URI "TVShell"
     VERSION 1.0
+    RESOURCE_PREFIX "/"
     QML_FILES
         qml/Main.qml
-        qml/style/Theme.qml
+        qml/Theme.qml
         qml/navigation/FocusManager.qml
         qml/components/ZoneFocusScope.qml
-        qml/components/materials/TactilePlate.qml
-        qml/components/materials/SmokedGlassPanel.qml
-        qml/components/materials/HolographicBorder.qml
-        qml/components/widgets/AppShelfCard.qml
-        qml/components/widgets/RotaryDialRail.qml
-        qml/components/widgets/IndustrialTopBar.qml
-        qml/components/widgets/TactileButton.qml
-        qml/components/widgets/GlassDockBar.qml
-        qml/components/background/IndustrialBackground.qml
-        qml/components/background/GelLayer.qml
-        qml/components/background/NeonTubes.qml
-        qml/components/background/StructuralGrid.qml
+        qml/components/AppShelfCard.qml
+        qml/components/RotaryDialRail.qml
+        qml/components/IndustrialTopBar.qml
+        qml/components/TactileButton.qml
+        qml/components/GlassDockBar.qml
 )
 
 target_link_libraries(tvshell PRIVATE

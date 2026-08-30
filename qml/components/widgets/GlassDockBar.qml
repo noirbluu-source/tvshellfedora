@@ -4,7 +4,7 @@ import TVShell
 FocusScope {
     id: root
 
-    property string statusMessage: "STATUS: READY // 4K RENDER DRIVER ACTIVE"
+    property string statusMessage: "STATUS: READY // 60 HZ DRM ENGINE ACTIVE"
     property int currentIndex: 0
     property var actionModel: [
         { label: "GUIDE", glyph: "☷" },
@@ -16,7 +16,7 @@ FocusScope {
 
     signal actionTriggered(string action)
 
-    implicitHeight: Theme.px(100)
+    implicitHeight: Theme.px(94)
 
     Component.onCompleted: {
         FocusManager.registerZone(FocusManager.Zone.BottomBar, root)
@@ -28,7 +28,7 @@ FocusScope {
         }
     }
 
-    // D-Pad navigation across Bottom Bar actions
+    // D-PAD Navigation in Bottom Dock
     Keys.onPressed: function(event) {
         if (event.key === Qt.Key_Left) {
             if (currentIndex > 0) {
@@ -66,112 +66,89 @@ FocusScope {
         }
     }
 
-    // Floating Smoked Glass Capsule Dock
-    Rectangle {
+    // Smoked Glass Chassis
+    SmokedGlassPanel {
         anchors.fill: parent
-        radius: Theme.radiusLG
-        color: Theme.smokedGlassDeep
-        border.color: root.isZoneFocused ? Theme.neonPurple : Theme.chromeDark
-        border.width: root.isZoneFocused ? Theme.px(2) : Theme.px(1)
+        cornerRadius: Theme.radiusMD
+        isHighlighted: root.isZoneFocused
+    }
 
-        Behavior on border.color {
-            ColorAnimation { duration: Theme.animFast }
-        }
+    // Left Terminal Screen (Scanlines + Phosphor Readout)
+    Rectangle {
+        anchors.left: parent.left
+        anchors.leftMargin: Theme.px(24)
+        anchors.verticalCenter: parent.verticalCenter
+        width: parent.width * 0.54
+        height: Theme.px(58)
+        radius: Theme.radiusSM
+        color: Theme.surfaceRecessed
+        border.color: Theme.bevelDarkDeep
+        border.width: Theme.px(2)
+        clip: true
 
-        // Top Specular Glass Lip Reflection
-        Rectangle {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            height: Theme.px(1)
-            color: Theme.bevelLightSharp
-            opacity: 0.6
-        }
-
-        // Left Terminal / CRT Phosphor Log Screen
-        Rectangle {
-            anchors.left: parent.left
-            anchors.leftMargin: Theme.px(24)
-            anchors.verticalCenter: parent.verticalCenter
-            width: parent.width * 0.52
-            height: Theme.px(60)
-            radius: Theme.radiusSM
-            color: Theme.surfaceRecessed
-            border.color: Theme.bevelDarkDeep
-            border.width: Theme.px(2)
-            clip: true
-
-            // Scanline lines over CRT screen
-            Column {
-                anchors.fill: parent
-                opacity: 0.25
-                Repeater {
-                    model: Math.ceil(parent.height / Theme.px(4))
-                    Rectangle {
-                        width: parent.width
-                        height: Theme.px(1)
-                        color: "#000000"
-                        Rectangle {
-                            anchors.top: parent.bottom
-                            width: parent.width
-                            height: Theme.px(3)
-                            color: "transparent"
-                        }
-                    }
-                }
-            }
-
-            // CRT Text Readout
-            Row {
-                anchors.left: parent.left
-                anchors.leftMargin: Theme.px(16)
-                anchors.right: parent.right
-                anchors.rightMargin: Theme.px(16)
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: Theme.px(12)
-
-                Text {
-                    text: "▶"
-                    color: Theme.neonAqua
-                    font.pixelSize: Theme.fontCaption
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-
-                Text {
-                    text: root.statusMessage
-                    color: Theme.phosphorGreen
-                    font.pixelSize: Theme.fontBody
-                    font.bold: true
-                    font.letterSpacing: 1.2
-                    elide: Text.ElideRight
-                    anchors.verticalCenter: parent.verticalCenter
+        // Batched Scanlines
+        Canvas {
+            anchors.fill: parent
+            opacity: 0.30
+            onPaint: {
+                var ctx = getContext("2d");
+                ctx.clearRect(0, 0, width, height);
+                ctx.fillStyle = "#000000";
+                for (var y = 0; y < height; y += Theme.px(4)) {
+                    ctx.fillRect(0, y, width, 1);
                 }
             }
         }
 
-        // Right Quick Action Buttons (Zone 4 Focusable Row)
         Row {
+            anchors.left: parent.left
+            anchors.leftMargin: Theme.px(16)
             anchors.right: parent.right
-            anchors.rightMargin: Theme.px(24)
+            anchors.rightMargin: Theme.px(16)
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Theme.px(16)
+            spacing: Theme.px(12)
 
-            Repeater {
-                model: root.actionModel
+            Text {
+                text: "▶"
+                color: Theme.neonAcidGreen
+                font.pixelSize: Theme.fontCaption
+                anchors.verticalCenter: parent.verticalCenter
+            }
 
-                delegate: TactileButton {
-                    labelText: modelData.label
-                    glyph: modelData.glyph
-                    isBrass: false
-                    isCurrent: (root.currentIndex === index) && root.isZoneFocused
-                    width: Theme.px(150)
-                    height: Theme.px(54)
+            Text {
+                text: root.statusMessage
+                color: Theme.neonAcidGreenBright
+                font.pixelSize: Theme.fontBody
+                font.bold: true
+                font.letterSpacing: 1.2
+                elide: Text.ElideRight
+                width: parent.width - Theme.px(40)
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+    }
 
-                    onClicked: {
-                        root.currentIndex = index
-                        root.forceActiveFocus()
-                        root.actionTriggered(modelData.label)
-                    }
+    // Right Action Buttons
+    Row {
+        anchors.right: parent.right
+        anchors.rightMargin: Theme.px(20)
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: Theme.px(14)
+
+        Repeater {
+            model: root.actionModel
+
+            delegate: TactileButton {
+                labelText: modelData.label
+                glyph: modelData.glyph
+                isCurrent: (root.currentIndex === index) && root.isZoneFocused
+                width: Theme.px(146)
+                height: Theme.px(54)
+
+                onClicked: {
+                    root.currentIndex = index
+                    root.forceActiveFocus()
+                    root.actionTriggered(modelData.label)
                 }
             }
         }

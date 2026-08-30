@@ -32,16 +32,20 @@ Window {
         function onItemActivated(zone, index) {
             if (zone === FocusManager.Zone.MainAppList) {
                 var app = appLauncherModel.get(index)
-                eventFeedback.text = "SELECTED: " + app.title + " (CMD: " + app.command + ")"
-            } else {
-                eventFeedback.text = "ACTIVATE -> " + FocusManager.zoneName(zone) + " [INDEX " + index + "]"
+                dockBar.statusMessage = "EXEC // " + app.title + " (CMD: " + app.command + ")"
+            } else if (zone === FocusManager.Zone.TopControls) {
+                dockBar.statusMessage = "SYS CONTROL // " + topBar.buttonModel[index].label
+            } else if (zone === FocusManager.Zone.BottomBar) {
+                dockBar.statusMessage = "DOCK ACTION // " + dockBar.actionModel[index].label
+            } else if (zone === FocusManager.Zone.RotaryMenu) {
+                dockBar.statusMessage = "FILTER // CATEGORY [" + rotaryDial.model[index] + "]"
             }
         }
         function onBackRequested() {
-            eventFeedback.text = "EVENT -> BACK TRIGGERED (ESC / BACK)"
+            dockBar.statusMessage = "INTERRUPT // BACK KEY DISPATCHED"
         }
         function onMenuRequested() {
-            eventFeedback.text = "EVENT -> MENU TRIGGERED (M / MENU)"
+            dockBar.statusMessage = "INTERRUPT // SYSTEM MENU TRIGGERED"
         }
     }
 
@@ -65,37 +69,16 @@ Window {
         anchors.fill: parent
         anchors.margins: Theme.px(60)
 
-        // ZONE 3: TOP CONTROLS
-        Item {
-            id: zone3Container
+        // =====================================================================
+        // ZONE 3: INDUSTRIAL TOP BAR (PHASE 6)
+        // =====================================================================
+        IndustrialTopBar {
+            id: topBar
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.right: parent.right
-            height: Theme.px(100)
-
-            Row {
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: Theme.px(20)
-
-                Text {
-                    text: "TV SHELL // APP SUBSYSTEM"
-                    color: Theme.neonAqua
-                    font.pixelSize: Theme.px(32)
-                    font.bold: true
-                }
-            }
-
-            ZoneFocusScope {
-                id: zone3
-                zoneId: FocusManager.Zone.TopControls
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                width: Theme.px(600)
-                height: Theme.px(70)
-                isHorizontal: true
-                itemSpacing: Theme.px(16)
-                model: ["INPUT", "NETWORK", "POWER"]
+            onControlTriggered: function(action) {
+                dockBar.statusMessage = "TRIGGER // " + action + " CMD"
             }
         }
 
@@ -104,11 +87,11 @@ Window {
         // =====================================================================
         Item {
             id: zone1Container
-            anchors.top: zone3Container.bottom
-            anchors.bottom: zone4Container.top
+            anchors.top: topBar.bottom
+            anchors.bottom: dockBar.top
             anchors.left: parent.left
-            anchors.topMargin: Theme.px(20)
-            anchors.bottomMargin: Theme.px(20)
+            anchors.topMargin: Theme.px(24)
+            anchors.bottomMargin: Theme.px(24)
             width: Theme.px(520)
 
             RotaryDialRail {
@@ -116,20 +99,22 @@ Window {
                 anchors.fill: parent
                 model: ["ALL APPS", "MEDIA", "SYSTEM", "UTILITIES"]
                 onItemSelected: function(idx) {
-                    eventFeedback.text = "CATEGORY: " + model[idx]
+                    dockBar.statusMessage = "FILTER // " + model[idx]
                 }
             }
         }
 
-        // ZONE 2: MAIN APPLICATION LIST
+        // =====================================================================
+        // ZONE 2: MAIN APPLICATION LIST (PHASE 4 FOCUS CARDS)
+        // =====================================================================
         Item {
             id: zone2Container
-            anchors.top: zone3Container.bottom
-            anchors.bottom: zone4Container.top
+            anchors.top: topBar.bottom
+            anchors.bottom: dockBar.top
             anchors.left: zone1Container.right
             anchors.right: parent.right
-            anchors.topMargin: Theme.px(20)
-            anchors.bottomMargin: Theme.px(20)
+            anchors.topMargin: Theme.px(24)
+            anchors.bottomMargin: Theme.px(24)
             anchors.leftMargin: Theme.px(40)
 
             Text {
@@ -155,48 +140,16 @@ Window {
             }
         }
 
-        // ZONE 4: BOTTOM BAR
-        Item {
-            id: zone4Container
+        // =====================================================================
+        // ZONE 4: RETRO CRT GLASS DOCK BAR (PHASE 6)
+        // =====================================================================
+        GlassDockBar {
+            id: dockBar
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
-            height: Theme.px(120)
-
-            Rectangle {
-                anchors.fill: parent
-                color: Theme.smokedGlassDeep
-                radius: Theme.radiusMD
-                border.color: Theme.chromeDark
-                border.width: Theme.px(1)
-
-                Row {
-                    anchors.left: parent.left
-                    anchors.leftMargin: Theme.px(30)
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: Theme.px(20)
-
-                    Text {
-                        id: eventFeedback
-                        text: "STATUS: READY"
-                        color: Theme.neonAqua
-                        font.pixelSize: Theme.px(24)
-                        font.bold: true
-                    }
-                }
-
-                ZoneFocusScope {
-                    id: zone4
-                    zoneId: FocusManager.Zone.BottomBar
-                    anchors.right: parent.right
-                    anchors.rightMargin: Theme.px(20)
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: Theme.px(540)
-                    height: Theme.px(60)
-                    isHorizontal: true
-                    itemSpacing: Theme.px(16)
-                    model: ["GUIDE", "SEARCH", "INFO"]
-                }
+            onActionTriggered: function(action) {
+                dockBar.statusMessage = "TRIGGER // " + action + " CMD"
             }
         }
     }

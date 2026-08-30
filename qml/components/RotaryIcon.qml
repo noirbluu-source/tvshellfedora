@@ -9,82 +9,137 @@ Item {
     property bool isSelected: false
     property bool isZoneFocused: false
 
-    implicitWidth: Theme.px(110)
-    implicitHeight: Theme.px(110)
+    // Base dimensions scale dramatically on focus
+    implicitWidth: Theme.px(130)
+    implicitHeight: Theme.px(130)
 
-    // 1. Ambient Holographic Halo when selected and focused
+    // =========================================================================
+    // 1. VOLUMETRIC HALO & DROP SHADOW
+    // =========================================================================
     Rectangle {
         anchors.fill: parent
-        anchors.margins: -Theme.px(8)
+        anchors.margins: -Theme.px(12)
         radius: width / 2
         color: "transparent"
-        border.width: Theme.px(3)
-        border.color: Theme.neonAqua
-        opacity: (root.isSelected && root.isZoneFocused) ? 0.9 : 0.0
+        border.width: Theme.px(4)
+        border.color: Theme.neonAcidGreen
+        opacity: (root.isSelected && root.isZoneFocused) ? 0.85 : 0.0
 
         Behavior on opacity {
             NumberAnimation { duration: Theme.animFast; easing.type: Easing.OutQuad }
         }
     }
 
-    // 2. Extruded Metal Housing (Chunky physical socket)
+    // =========================================================================
+    // 2. POLISHED CHROME BEZEL (Luxury Audio Knob Ring)
+    // =========================================================================
     Rectangle {
-        id: socketBase
+        id: chromeBezel
         anchors.fill: parent
         radius: width / 2
-        color: root.isSelected ? Theme.surfacePlateRaised : Theme.concreteChassis
-        border.width: root.isSelected ? Theme.px(3) : Theme.px(2)
-        border.color: root.isSelected ? (root.isZoneFocused ? Theme.neonAqua : Theme.neonPurple) : Theme.chromeDark
+        color: root.isSelected ? Theme.chromeBright : Theme.chromeDark
+        border.width: Theme.px(2)
+        border.color: root.isSelected ? Theme.chromeHighlight : Theme.concreteChassis
 
-        Behavior on border.color {
+        Behavior on color {
             ColorAnimation { duration: Theme.animFast }
         }
 
-        // 3. Top-Left Incident Bevel (45° light chamfer)
+        // Top-Left Incident Specular Light Arc (45-degree polish)
         Rectangle {
             anchors.fill: parent
             radius: width / 2
             color: "transparent"
-            border.width: Theme.px(1)
-            border.color: root.isSelected ? Theme.chromeHighlight : Theme.bevelLight
-            opacity: root.isSelected ? 0.85 : 0.35
+            border.width: Theme.px(2)
+            border.color: Theme.chromeHighlight
+            opacity: root.isSelected ? 0.95 : 0.40
         }
 
-        // 4. Translucent Purple Gel Inset Body
+        // Bottom-Right Ambient Occlusion Shadow
         Rectangle {
             anchors.fill: parent
-            anchors.margins: Theme.px(6)
+            anchors.margins: Theme.px(1)
             radius: width / 2
-            color: root.isSelected ? Qt.rgba(0.61, 0.36, 0.90, 0.45) : Qt.rgba(0.08, 0.09, 0.12, 0.85)
-
-            // Inner Specular Glass Reflection
-            Rectangle {
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.margins: Theme.px(2)
-                height: parent.height * 0.45
-                radius: width / 2
-                color: Qt.rgba(1.0, 1.0, 1.0, root.isSelected ? 0.22 : 0.06)
-            }
-
-            // Chunky Hardware Glyph
-            Text {
-                anchors.centerIn: parent
-                text: root.symbol
-                color: root.isSelected
-                       ? (root.isZoneFocused ? Theme.neonAquaBright : Theme.chromeHighlight)
-                       : Theme.chromeMid
-                font.pixelSize: Theme.px(38)
-                font.bold: true
-            }
+            color: "transparent"
+            border.width: Theme.px(2)
+            border.color: Theme.bevelDark
+            opacity: 0.80
         }
     }
 
-    // Physical Elevation & Depth
-    scale: root.isSelected ? (root.isZoneFocused ? 1.18 : 1.08) : 0.88
-    opacity: root.isSelected ? 1.0 : 0.65
-    z: root.isSelected ? 10 : 1
+    // =========================================================================
+    // 3. TRANSLUCENT GEL BUBBLE & TINTED PLASTIC BODY
+    // =========================================================================
+    Rectangle {
+        id: gelBubble
+        anchors.fill: parent
+        anchors.margins: Theme.px(8)
+        radius: width / 2
+        color: root.isSelected
+               ? (root.isZoneFocused ? Theme.gelAcidGreenTranslucent : Theme.gelPurpleTranslucent)
+               : Theme.bgConcreteDark
+
+        border.width: Theme.px(1)
+        border.color: root.isSelected ? Theme.neonAcidGreenBright : Theme.chromeMid
+
+        // High-Gloss Convex Specular Dome (Top Gel Reflection)
+        Rectangle {
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.margins: Theme.px(4)
+            height: parent.height * 0.44
+            radius: width / 2
+            color: Qt.rgba(1.0, 1.0, 1.0, root.isSelected ? 0.35 : 0.08)
+
+            // Inner crescent highlight
+            Rectangle {
+                anchors.top: parent.top
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.topMargin: Theme.px(2)
+                width: parent.width * 0.55
+                height: Theme.px(3)
+                radius: width / 2
+                color: Theme.chromeHighlight
+                opacity: root.isSelected ? 0.90 : 0.20
+            }
+        }
+
+        // Secondary Sub-surface Reflection
+        Rectangle {
+            anchors.bottom: parent.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottomMargin: Theme.px(4)
+            width: parent.width * 0.45
+            height: Theme.px(3)
+            radius: width / 2
+            color: root.isSelected ? Theme.neonAcidGreenBright : Theme.chromeDark
+            opacity: root.isSelected ? 0.60 : 0.15
+        }
+
+        // =====================================================================
+        // 4. CHUNKY METALLIC ICON GLYPH
+        // =====================================================================
+        Text {
+            anchors.centerIn: parent
+            text: root.symbol
+            color: root.isSelected
+                   ? (root.isZoneFocused ? Theme.neonAcidGreenBright : Theme.textPrimary)
+                   : Theme.chromeMid
+            font.pixelSize: Theme.px(42)
+            font.bold: true
+
+            style: root.isSelected ? Text.Outline : Text.Normal
+            styleColor: Theme.bevelDark
+        }
+    }
+
+    // =========================================================================
+    // 5. DRAMATIC 10-FOOT ELEVATION & DEPTH TRANSFORMS
+    // =========================================================================
+    scale: root.isSelected ? (root.isZoneFocused ? 1.32 : 1.16) : 0.84
+    opacity: root.isSelected ? 1.0 : 0.45
+    z: root.isSelected ? 20 : 1
 
     Behavior on scale {
         NumberAnimation { duration: Theme.animNormal; easing.type: Easing.OutBack }

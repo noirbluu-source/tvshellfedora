@@ -6,16 +6,16 @@ FocusScope {
 
     property int currentIndex: 0
     property var buttonModel: [
-        { label: "INPUT", glyph: "⎋", brass: true },
-        { label: "NETWORK", glyph: "☵", brass: false },
-        { label: "POWER", glyph: "⏻", brass: true }
+        { label: "BACK",    glyph: "◀" },
+        { label: "FORWARD", glyph: "▶" },
+        { label: "CLOSE",   glyph: "✕" }
     ]
     readonly property int count: buttonModel.length
     readonly property bool isZoneFocused: FocusManager.currentZone === FocusManager.Zone.TopControls
 
     signal controlTriggered(string action)
 
-    implicitHeight: Theme.px(90)
+    implicitHeight: Theme.px(86)
 
     Component.onCompleted: {
         FocusManager.registerZone(FocusManager.Zone.TopControls, root)
@@ -27,7 +27,7 @@ FocusScope {
         }
     }
 
-    // D-Pad navigation across Top Bar buttons
+    // D-PAD Top Bar Navigation
     Keys.onPressed: function(event) {
         if (event.key === Qt.Key_Left) {
             if (currentIndex > 0) {
@@ -65,7 +65,7 @@ FocusScope {
         }
     }
 
-    // System Telemetry Clock Timer
+    // Clock update timer
     Timer {
         interval: 1000
         running: true
@@ -79,49 +79,55 @@ FocusScope {
         }
     }
 
-    // Industrial Top Frame Chassis
+    // =========================================================================
+    // DARK SMOKED GLASS CONTAINER & RETRO HARDWARE FITTINGS
+    // =========================================================================
     Rectangle {
         anchors.fill: parent
         radius: Theme.radiusMD
         color: Theme.smokedGlassDeep
-        border.color: Theme.chromeDark
-        border.width: Theme.px(1)
+        border.color: root.isZoneFocused ? Theme.neonAcidGreen : Theme.chromeDark
+        border.width: root.isZoneFocused ? Theme.px(2) : Theme.px(1)
 
-        // Top Highlight Chamfer
+        Behavior on border.color {
+            ColorAnimation { duration: Theme.animFast }
+        }
+
+        // Top Specular Lip Highlight
         Rectangle {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
             height: Theme.px(1)
-            color: Theme.bevelLight
+            color: Theme.bevelLightSharp
+            opacity: 0.70
         }
 
-        // Left Status & Machine Telemetry
+        // Left Telemetry & System Indicator
         Row {
             anchors.left: parent.left
             anchors.leftMargin: Theme.px(28)
             anchors.verticalCenter: parent.verticalCenter
             spacing: Theme.px(20)
 
-            // Blinking Hardware CRT LED Dot
+            // Pulsing CRT Hardware Indicator
             Rectangle {
                 width: Theme.px(12)
                 height: Theme.px(12)
                 radius: width / 2
-                color: Theme.phosphorGreen
+                color: Theme.neonAcidGreen
                 anchors.verticalCenter: parent.verticalCenter
 
                 SequentialAnimation on opacity {
                     loops: Animation.Infinite
-                    NumberAnimation { from: 1.0; to: 0.3; duration: 800; easing.type: Easing.InOutQuad }
-                    NumberAnimation { from: 0.3; to: 1.0; duration: 800; easing.type: Easing.InOutQuad }
+                    NumberAnimation { from: 1.0; to: 0.3; duration: 900; easing.type: Easing.InOutQuad }
+                    NumberAnimation { from: 0.3; to: 1.0; duration: 900; easing.type: Easing.InOutQuad }
                 }
             }
 
-            // OS Subsystem Title
             Text {
                 text: "SYSTEM // TV-OS"
-                color: Theme.chromeBright
+                color: Theme.textPrimary
                 font.pixelSize: Theme.fontTitle
                 font.bold: true
                 font.letterSpacing: 2
@@ -130,37 +136,15 @@ FocusScope {
 
             Rectangle {
                 width: Theme.px(2)
-                height: Theme.px(24)
+                height: Theme.px(26)
                 color: Theme.chromeDark
                 anchors.verticalCenter: parent.verticalCenter
             }
 
-            // DRM Driver Telemetry Badge
-            Rectangle {
-                width: drmLabel.implicitWidth + Theme.px(16)
-                height: drmLabel.implicitHeight + Theme.px(6)
-                radius: Theme.radiusSharp
-                color: Theme.surfaceRecessed
-                border.color: Theme.chromeDark
-                border.width: Theme.px(1)
-                anchors.verticalCenter: parent.verticalCenter
-
-                Text {
-                    id: drmLabel
-                    anchors.centerIn: parent
-                    text: "MESA / DRM 4K60"
-                    color: Theme.neonAqua
-                    font.pixelSize: Theme.fontMicro
-                    font.bold: true
-                    font.letterSpacing: 1
-                }
-            }
-
-            // Digital HUD Clock
             Text {
                 id: clockText
                 text: "12:00:00"
-                color: Theme.textSecondary
+                color: Theme.neonAcidGreenBright
                 font.pixelSize: Theme.fontBody
                 font.bold: true
                 font.letterSpacing: 2
@@ -168,7 +152,7 @@ FocusScope {
             }
         }
 
-        // Right Physical Hardware Control Buttons (Zone 3 Focusable Row)
+        // Right Physical Raw Brass / Mercury Cube Buttons (Zone 3 Focusable Row)
         Row {
             anchors.right: parent.right
             anchors.rightMargin: Theme.px(20)
@@ -181,9 +165,8 @@ FocusScope {
                 delegate: TactileButton {
                     labelText: modelData.label
                     glyph: modelData.glyph
-                    isBrass: modelData.brass
                     isCurrent: (root.currentIndex === index) && root.isZoneFocused
-                    width: Theme.px(160)
+                    width: Theme.px(154)
                     height: Theme.px(54)
 
                     onClicked: {

@@ -29,7 +29,7 @@ Window {
         FocusManager.menuRequested()
     }
 
-    Connections {
+Connections {
         target: FocusManager
         function onItemActivated(zone, index) {
             if (zone === FocusManager.Zone.MainAppList) {
@@ -40,7 +40,7 @@ Window {
             } else if (zone === FocusManager.Zone.BottomBar) {
                 dockBar.statusMessage = "DOCK ACTION // " + dockBar.actionModel[index].label
             } else if (zone === FocusManager.Zone.RotaryMenu) {
-                dockBar.statusMessage = "FILTER // CATEGORY [" + rotaryMenu.itemsModel[index].label + "]"
+                dockBar.statusMessage = "FILTER // CATEGORY [" + rotaryDial.model[index] + "]"
             }
         }
         function onBackRequested() {

@@ -8,68 +8,107 @@ Item {
     property string itemSubtitle: ""
     property string itemCategory: ""
     property bool isCurrent: false
+    property bool isPressed: false
     signal cardClicked()
 
-    Rectangle {
-        id: bg
+    // 1. Holographic Glow Layer (Behind chassis)
+    HolographicBorder {
+        id: holoGlow
+        active: root.isCurrent
+        cornerRadius: Theme.radiusMD
+    }
+
+    // 2. Brushed Chrome & Neumorphic Chassis Layer
+    FocusChromeFrame {
+        id: chromeFrame
+        active: root.isCurrent
+        cornerRadius: Theme.radiusMD
+    }
+
+    // 3. Card Content & 10-Foot Typography
+    Item {
         anchors.fill: parent
-        radius: Theme.px(8)
-        color: root.isCurrent ? Theme.surfaceFocused : Theme.surfaceBase
-        border.color: root.isCurrent ? Theme.borderFocused : Theme.borderBase
-        border.width: root.isCurrent ? Theme.px(4) : Theme.px(2)
+        anchors.margins: Theme.px(24)
 
         Column {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            anchors.leftMargin: Theme.px(28)
-            anchors.rightMargin: Theme.px(28)
-            spacing: Theme.px(6)
+            spacing: Theme.px(8)
 
+            // Header Row: Title & Chromatic Category Pill
             Row {
-                spacing: Theme.px(16)
                 width: parent.width
+                spacing: Theme.px(16)
 
                 Text {
+                    id: mainTitle
                     text: root.itemLabel
                     color: root.isCurrent ? Theme.textPrimary : Theme.textSecondary
-                    font.pixelSize: Theme.px(26)
-                    font.bold: root.isCurrent
+                    font.pixelSize: Theme.fontTitle
+                    font.bold: true
                     elide: Text.ElideRight
+                    width: parent.width - (catBadge.visible ? catBadge.width + parent.spacing : 0)
+
+                    // Text drop shadow for TV contrast
+                    style: Text.Outline
+                    styleColor: root.isCurrent ? "rgba(0, 0, 0, 0.85)" : "transparent"
                 }
 
+                // Category Badge Pill
                 Rectangle {
+                    id: catBadge
                     visible: root.itemCategory.length > 0
-                    width: catText.implicitWidth + Theme.px(16)
-                    height: catText.implicitHeight + Theme.px(6)
-                    radius: Theme.px(4)
-                    color: root.isCurrent ? Theme.borderFocused : Theme.borderBase
+                    width: catLabel.implicitWidth + Theme.px(20)
+                    height: catLabel.implicitHeight + Theme.px(8)
+                    radius: Theme.radiusPill
                     anchors.verticalCenter: parent.verticalCenter
+                    color: root.isCurrent ? Theme.neonPurple : Theme.surfaceRecessed
+                    border.color: root.isCurrent ? Theme.neonAqua : Theme.chromeDark
+                    border.width: Theme.px(1)
 
                     Text {
-                        id: catText
+                        id: catLabel
                         anchors.centerIn: parent
-                        text: root.itemCategory
-                        color: Theme.textPrimary
-                        font.pixelSize: Theme.px(14)
+                        text: root.itemCategory.toUpperCase()
+                        color: root.isCurrent ? Theme.chromeHighlight : Theme.textSecondary
+                        font.pixelSize: Theme.fontCaption
                         font.bold: true
+                        font.letterSpacing: 1.2
                     }
                 }
             }
 
+            // Subtitle Description
             Text {
                 visible: root.itemSubtitle.length > 0
                 width: parent.width
                 text: root.itemSubtitle
-                color: Theme.textSecondary
-                font.pixelSize: Theme.px(16)
+                color: root.isCurrent ? Theme.chromeBright : Theme.textMuted
+                font.pixelSize: Theme.fontBody
                 elide: Text.ElideRight
+                maximumLineCount: 2
+                wrapMode: Text.WordWrap
             }
         }
     }
 
-    scale: root.isCurrent ? 1.02 : 1.0
+    // 4. Focus Elevation & Depression Transforms
+    scale: root.isPressed ? Theme.pressedScale : (root.isCurrent ? Theme.focusScaleCard : 1.0)
+    z: root.isCurrent ? 10 : 1
+
     Behavior on scale {
-        NumberAnimation { duration: 90; easing.type: Easing.OutQuad }
+        NumberAnimation {
+            duration: root.isPressed ? Theme.animInstant : Theme.animFast
+            easing.type: Easing.OutQuad
+        }
+    }
+
+    // Mouse fallback handler for desktop dev testing
+    MouseArea {
+        anchors.fill: parent
+        onPressed: root.isPressed = true
+        onReleased: root.isPressed = false
+        onClicked: root.cardClicked()
     }
 }

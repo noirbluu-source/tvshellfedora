@@ -5,35 +5,67 @@ Item {
     id: root
     anchors.fill: parent
 
-    // Ambient Purple Glow behind Dial
+    // Translucent Purple Gel Body (Under Rotary Dial & Navigation Zone)
     Rectangle {
-        x: -Theme.px(150)
-        y: Theme.px(150)
-        width: Theme.px(600)
-        height: Theme.px(600)
-        radius: width / 2
-        color: Theme.neonPurple
-        opacity: 0.08
+        x: -Theme.px(80)
+        y: Theme.px(140)
+        width: Theme.px(680)
+        height: root.height - Theme.px(280)
+        radius: Theme.radiusLG
+        color: Theme.gelPurpleTranslucent
+        opacity: 0.40
+
+        // Specular Top-Edge Reflection
+        Rectangle {
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: Theme.px(2)
+            color: Theme.neonPurpleBright
+            opacity: 0.35
+        }
+
+        // Inner Refraction Lip
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: Theme.px(4)
+            radius: Math.max(0, Theme.radiusLG - Theme.px(4))
+            color: "transparent"
+            border.color: Theme.neonPurple
+            border.width: Theme.px(1)
+            opacity: 0.15
+        }
     }
 
-    // Ambient Aqua Glow behind Center Shelf
+    // Translucent Acid-Green Gel Accent (Behind Center Content Shelf)
     Rectangle {
-        anchors.centerIn: parent
-        width: Theme.px(700)
-        height: Theme.px(500)
-        radius: width / 2
-        color: Theme.neonAqua
-        opacity: 0.05
-    }
+        x: root.width * 0.32
+        y: Theme.px(160)
+        width: root.width * 0.62
+        height: root.height - Theme.px(320)
+        radius: Theme.radiusLG
+        color: Theme.gelAcidGreenTranslucent
+        opacity: 0.28
 
-    // Ambient Pink Glow on Bottom Right
-    Rectangle {
-        x: parent.width - Theme.px(500)
-        y: parent.height - Theme.px(450)
-        width: Theme.px(500)
-        height: Theme.px(500)
-        radius: width / 2
-        color: Theme.neonPink
-        opacity: 0.05
+        // Acid-Green Subtle Rim Highlight
+        Rectangle {
+            anchors.fill: parent
+            radius: Theme.radiusLG
+            color: "transparent"
+            border.color: Theme.neonAcidGreen
+            border.width: Theme.px(1)
+            opacity: 0.12
+        }
+
+        // Specular Diagonal Light Band
+        Rectangle {
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: Theme.px(40)
+            radius: Theme.radiusLG
+            color: Theme.gelSpecularSheen
+            opacity: 0.04
+        }
     }
 }

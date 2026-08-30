@@ -106,7 +106,7 @@ FocusScope {
             Repeater {
                 id: rep
                 model: root.model
-                delegate: AppCard {
+                delegate: AppShelfCard {
                     width: root.width > 0 ? (root.width - (root.itemSpacing * (rep.count - 1))) / rep.count : Theme.px(200)
                     height: root.height
                     itemTitle: (typeof model.title !== "undefined") ? model.title : (typeof modelData !== "undefined" ? modelData : "")
@@ -132,9 +132,9 @@ FocusScope {
             Repeater {
                 id: rep
                 model: root.model
-                delegate: AppCard {
+                delegate: AppShelfCard {
                     width: root.width
-                    height: root.height > 0 ? (root.height - (root.itemSpacing * (rep.count - 1))) / rep.count : Theme.px(110)
+                    height: root.height > 0 ? (root.height - (root.itemSpacing * (rep.count - 1))) / rep.count : Theme.px(116)
                     itemTitle: (typeof model.title !== "undefined") ? model.title : (typeof modelData !== "undefined" ? modelData : "")
                     itemSubtitle: (typeof model.subtitle !== "undefined") ? model.subtitle : ""
                     itemCategory: (typeof model.category !== "undefined") ? model.category : ""

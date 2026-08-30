@@ -99,35 +99,25 @@ Window {
             }
         }
 
-        // ZONE 1: ROTARY MENU
+        // =====================================================================
+        // ZONE 1: ROTARY DIAL RAIL (PHASE 5)
+        // =====================================================================
         Item {
             id: zone1Container
             anchors.top: zone3Container.bottom
             anchors.bottom: zone4Container.top
             anchors.left: parent.left
-            anchors.topMargin: Theme.px(30)
-            anchors.bottomMargin: Theme.px(30)
-            width: Theme.px(480)
+            anchors.topMargin: Theme.px(20)
+            anchors.bottomMargin: Theme.px(20)
+            width: Theme.px(520)
 
-            Text {
-                id: zone1Header
-                text: "ZONE 1: CATEGORIES"
-                color: Theme.textSecondary
-                font.pixelSize: Theme.px(20)
-                font.bold: true
-            }
-
-            ZoneFocusScope {
-                id: zone1
-                zoneId: FocusManager.Zone.RotaryMenu
-                anchors.top: zone1Header.bottom
-                anchors.topMargin: Theme.px(16)
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                isHorizontal: false
-                itemSpacing: Theme.px(16)
+            RotaryDialRail {
+                id: rotaryDial
+                anchors.fill: parent
                 model: ["ALL APPS", "MEDIA", "SYSTEM", "UTILITIES"]
+                onItemSelected: function(idx) {
+                    eventFeedback.text = "CATEGORY: " + model[idx]
+                }
             }
         }
 
@@ -138,16 +128,17 @@ Window {
             anchors.bottom: zone4Container.top
             anchors.left: zone1Container.right
             anchors.right: parent.right
-            anchors.topMargin: Theme.px(30)
-            anchors.bottomMargin: Theme.px(30)
+            anchors.topMargin: Theme.px(20)
+            anchors.bottomMargin: Theme.px(20)
             anchors.leftMargin: Theme.px(40)
 
             Text {
                 id: zone2Header
-                text: "ZONE 2: APPLICATIONS (C++ MODEL)"
+                text: "APPLICATIONS"
                 color: Theme.textSecondary
-                font.pixelSize: Theme.px(20)
+                font.pixelSize: Theme.fontCaption
                 font.bold: true
+                font.letterSpacing: 2
             }
 
             ZoneFocusScope {
@@ -159,7 +150,7 @@ Window {
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 isHorizontal: false
-                itemSpacing: Theme.px(16)
+                itemSpacing: Theme.px(20)
                 model: appLauncherModel
             }
         }
@@ -176,7 +167,7 @@ Window {
                 anchors.fill: parent
                 color: Theme.smokedGlassDeep
                 radius: Theme.radiusMD
-                border.color: Theme.borderBase
+                border.color: Theme.chromeDark
                 border.width: Theme.px(1)
 
                 Row {
